@@ -69,6 +69,8 @@ This method returns the filenames of the entries in the archive.
 my $content = $peek->file($filename);
 ```
 
+This method files the filename in the archive and returns its content.
+
 ## iterate
 
 ```perl
