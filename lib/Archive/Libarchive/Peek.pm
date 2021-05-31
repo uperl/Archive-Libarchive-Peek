@@ -92,7 +92,7 @@ This method returns the filenames of the entries in the archive.
 
 =cut
 
-sub files ($self)
+sub _archive ($self)
 {
   my $r = Archive::Libarchive::ArchiveRead->new;
   my $e = Archive::Libarchive::Entry->new;
@@ -110,11 +110,18 @@ sub files ($self)
     Carp::croak($r->error_string);
   }
 
+  return ($r,$e);
+}
+
+sub files ($self)
+{
+  my($r, $e) = $self->_archive;
+
   my @files;
 
   while(1)
   {
-    $ret = $r->next_header($e);
+    my $ret = $r->next_header($e);
     last if $ret == ARCHIVE_EOF;
     if($ret == ARCHIVE_WARN)
     {
@@ -145,10 +152,97 @@ sub file
 
 =head2 iterate
 
- $peek->iterate(sub ($filename, $content) {
+ $peek->iterate(sub ($filename, $content, $type) {
    ...
  });
 
+This method iterates over the entries in the archive and calls the callback for each
+entry.  The arguments are:
+
+=over 4
+
+=item filename
+
+The filename of the entry
+
+=item content
+
+The content of the entry, or C<''> for non-regular or zero-sized files
+
+=item type
+
+The type of entry.  For regular files this will be C<reg> and for directories
+this will be C<dir>.  See L<Archive::Libarchive::Entry/filetype> for the full list.
+(Unlike L<Archive::Libarchive::Entry>, this method will NOT create dualvars, just
+strings).
+
+=back
+
 =cut
 
+sub iterate ($self, $callback)
+{
+  my($r, $e) = $self->_archive;
+
+  while(1)
+  {
+    my $ret = $r->next_header($e);
+    last if $ret == ARCHIVE_EOF;
+    if($ret == ARCHIVE_WARN)
+    {
+      Carp::carp($r->error_string);
+    }
+    elsif($ret < ARCHIVE_WARN)
+    {
+      Carp::croak($r->error_string);
+    }
+
+    my $content = '';
+    if($e->size > 0)
+    {
+      my $buffer;
+
+      my $ret = $r->read_data(\$buffer);
+      last if $ret == 0;
+      if($ret == ARCHIVE_WARN)
+      {
+        Carp::carp($r->error_string);
+      }
+      elsif($ret < ARCHIVE_WARN)
+      {
+        Carp::croak($r->error_string);
+      }
+      $content .= $buffer;
+    }
+
+    $callback->($e->pathname, $content, $e->filetype.'');
+  }
+}
+
 1;
+
+=head1 SEE ALSO
+
+=over 4
+
+=item L<Archive::Peek>
+
+The original!
+
+=item L<Archive::Peek::External>
+
+Another implementation that uses external commands to peek into archives
+
+=item L<Archive::Peek::Libarchive>
+
+Another implementation that also relies on C<libarchive>, but doesn't support
+the file type in iterate mode, encrypted zip entries, or multi-file RAR archives.
+
+=item L<Archive::Libarchive>
+
+A lower-level interface to C<libarchive> which can be used to read/extract and create
+archives of various formats.
+
+=back
+
+=cut

@@ -1,5 +1,6 @@
 use Test2::V0 -no_srand => 1;
 use Archive::Libarchive::Peek;
+use experimental qw( signatures );
 
 is(
   dies { Archive::Libarchive::Peek->new },
@@ -33,6 +34,23 @@ is(
   'files'
 );
 
+subtest 'iterate' => sub {
+
+  my $peek = Archive::Libarchive::Peek->new( filename => 'corpus/archive.tar' );
+
+  my @expect = (
+    [ 'archive/', '', 'dir' ],
+    [ 'archive/bar.txt', "there\n", 'reg' ],
+    [ 'archive/foo.txt', "hello\n", 'reg' ],
+  );
+
+  $peek->iterate(sub ($filename, $content, $type) {
+    my $expect = shift @expect;
+    is [$filename, $content, $type], $expect, $expect->[0];
+  });
+
+  is \@expect, [], 'consumed all expected';
+
+};
+
 done_testing;
-
-

@@ -72,10 +72,48 @@ my $content = $peek->file($filename);
 ## iterate
 
 ```perl
-$peek->iterate(sub ($filename, $content) {
+$peek->iterate(sub ($filename, $content, $type) {
   ...
 });
 ```
+
+This method iterates over the entries in the archive and calls the callback for each
+entry.  The arguments are:
+
+- filename
+
+    The filename of the entry
+
+- content
+
+    The content of the entry, or `''` for non-regular or zero-sized files
+
+- type
+
+    The type of entry.  For regular files this will be `reg` and for directories
+    this will be `dir`.  See ["filetype" in Archive::Libarchive::Entry](https://metacpan.org/pod/Archive::Libarchive::Entry#filetype) for the full list.
+    (Unlike [Archive::Libarchive::Entry](https://metacpan.org/pod/Archive::Libarchive::Entry), this method will NOT create dualvars, just
+    strings).
+
+# SEE ALSO
+
+- [Archive::Peek](https://metacpan.org/pod/Archive::Peek)
+
+    The original!
+
+- [Archive::Peek::External](https://metacpan.org/pod/Archive::Peek::External)
+
+    Another implementation that uses external commands to peek into archives
+
+- [Archive::Peek::Libarchive](https://metacpan.org/pod/Archive::Peek::Libarchive)
+
+    Another implementation that also relies on `libarchive`, but doesn't support
+    the file type in iterate mode, encrypted zip entries, or multi-file RAR archives.
+
+- [Archive::Libarchive](https://metacpan.org/pod/Archive::Libarchive)
+
+    A lower-level interface to `libarchive` which can be used to read/extract and create
+    archives of various formats.
 
 # AUTHOR
 
