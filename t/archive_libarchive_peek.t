@@ -83,4 +83,23 @@ is(
   'zip passphrase',
 );
 
+is(
+  Archive::Libarchive::Peek->new( filename => [
+    'corpus/test_read_splitted_rar_aa',
+    'corpus/test_read_splitted_rar_ab',
+    'corpus/test_read_splitted_rar_ac',
+    'corpus/test_read_splitted_rar_ad',
+  ]),
+  object {
+    call_list files => [
+      'test.txt',
+      'testlink',
+      'testdir/test.txt',
+      'testdir',
+      'testemptydir',
+    ];
+  },
+  'file',
+);
+
 done_testing;
