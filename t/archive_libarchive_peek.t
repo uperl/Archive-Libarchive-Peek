@@ -63,4 +63,24 @@ is(
   'file',
 );
 
+is(
+  Archive::Libarchive::Peek->new( filename => 'corpus/archive.zip', passphrase => 'password' ),
+  object {
+    call [ file => 'archive/' ] => '';
+    call [ file => 'archive/bar.txt' ] => "there\n";
+    call [ file => 'archive/foo.txt' ] => "hello\n";
+  },
+  'zip passphrase',
+);
+
+is(
+  Archive::Libarchive::Peek->new( filename => 'corpus/archive.zip', passphrase => sub { return 'password' } ),
+  object {
+    call [ file => 'archive/' ] => '';
+    call [ file => 'archive/bar.txt' ] => "there\n";
+    call [ file => 'archive/foo.txt' ] => "hello\n";
+  },
+  'zip passphrase',
+);
+
 done_testing;
