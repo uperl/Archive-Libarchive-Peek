@@ -113,6 +113,21 @@ sub _archive ($self)
   return ($r,$e);
 }
 
+sub _entry ($self, $r, $e)
+{
+  my $ret = $r->next_header($e);
+  return 0 if $ret == ARCHIVE_EOF;
+  if($ret == ARCHIVE_WARN)
+  {
+    Carp::carp($r->error_string);
+  }
+  elsif($ret < ARCHIVE_WARN)
+  {
+    Carp::croak($r->error_string);
+  }
+  return 1;
+}
+
 sub files ($self)
 {
   my($r, $e) = $self->_archive;
@@ -121,16 +136,7 @@ sub files ($self)
 
   while(1)
   {
-    my $ret = $r->next_header($e);
-    last if $ret == ARCHIVE_EOF;
-    if($ret == ARCHIVE_WARN)
-    {
-      Carp::carp($r->error_string);
-    }
-    elsif($ret < ARCHIVE_WARN)
-    {
-      Carp::croak($r->error_string);
-    }
+    last unless $self->_entry($r,$e);
     push @files, $e->pathname;
     $r->read_data_skip;
   }
@@ -186,16 +192,7 @@ sub iterate ($self, $callback)
 
   while(1)
   {
-    my $ret = $r->next_header($e);
-    last if $ret == ARCHIVE_EOF;
-    if($ret == ARCHIVE_WARN)
-    {
-      Carp::carp($r->error_string);
-    }
-    elsif($ret < ARCHIVE_WARN)
-    {
-      Carp::croak($r->error_string);
-    }
+    last unless $self->_entry($r,$e);
 
     my $content = '';
     if($e->size > 0)
