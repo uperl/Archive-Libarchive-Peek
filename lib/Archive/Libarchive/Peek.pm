@@ -3,7 +3,7 @@ package Archive::Libarchive::Peek;
 use strict;
 use warnings;
 use Archive::Libarchive 0.03 qw( ARCHIVE_OK ARCHIVE_WARN ARCHIVE_EOF );
-use Ref::Util qw( is_plain_coderef );
+use Ref::Util qw( is_plain_coderef is_plain_arrayref );
 use Carp ();
 use 5.020;
 use experimental qw( signatures );
@@ -74,8 +74,11 @@ sub new ($class, %options)
   Carp::croak("Required option: filename")
     unless defined $options{filename};
 
-  Carp::croak("Missing or unreadable: $options{filename}")
-    unless -r $options{filename};
+  foreach my $filename (@{ is_plain_arrayref($options{filename}) ? $options{filename} : [$options{filename}] })
+  {
+    Carp::croak("Missing or unreadable: $filename")
+      unless -r $filename;
+  }
 
   my $self = bless {
     filename   => delete $options{filename},
@@ -131,7 +134,8 @@ sub _archive ($self)
     }
   }
 
-  my $ret = $r->open_filename($self->filename, 10240);
+  my $ret = is_plain_arrayref($self->filename) ? $r->open_filenames($self->filename, 10240) : $r->open_filename($self->filename, 10240);
+
   if($ret == ARCHIVE_WARN)
   {
     Carp::carp($r->error_string);
