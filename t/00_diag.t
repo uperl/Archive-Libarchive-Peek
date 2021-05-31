@@ -14,6 +14,7 @@ $modules{$_} = $_ for qw(
   ExtUtils::MakeMaker
   File::chdir
   Path::Tiny
+  Ref::Util
   Test2::V0
   Test::Script
 );

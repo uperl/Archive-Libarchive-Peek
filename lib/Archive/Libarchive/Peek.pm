@@ -2,7 +2,8 @@ package Archive::Libarchive::Peek;
 
 use strict;
 use warnings;
-use Archive::Libarchive qw( ARCHIVE_OK ARCHIVE_WARN ARCHIVE_EOF );
+use Archive::Libarchive 0.03 qw( ARCHIVE_OK ARCHIVE_WARN ARCHIVE_EOF );
+use Ref::Util qw( is_plain_coderef );
 use Carp ();
 use 5.020;
 use experimental qw( signatures );
@@ -17,7 +18,25 @@ use experimental qw( signatures );
 =head1 DESCRIPTION
 
 This module lets you peek into archives without extracting them.  It is based on L<Archive::Peek>, but it uses L<Archive::Libarchive>,
-and thus all of the many formats supported by C<libarchive>.
+and thus all of the many formats supported by C<libarchive>.  It also supports some unique features of the various classes that use
+the "Peek" style interface:
+
+=over 4
+
+=item Many Many formats
+
+compressed tar, Zip, RAR, ISO 9660 images, etc.
+
+=item Zips with encrypted entries
+
+You can specify the passphrase or a passphrase callback with the constructor
+
+=item Multi-file RAR archives
+
+If filename is an array reference it will be assumed to be a list of filenames
+representing a single multi-file archive.
+
+=back
 
 =head1 CONSTRUCTOR
 
@@ -99,6 +118,18 @@ sub _archive ($self)
 
   $r->support_filter_all;
   $r->support_format_all;
+
+  if($self->{passphrase})
+  {
+    if(is_plain_coderef $self->{passphrase})
+    {
+      $r->set_passphrase_callback($self->{passphrase});
+    }
+    else
+    {
+      $r->add_passphrase($self->{passphrase});
+    }
+  }
 
   my $ret = $r->open_filename($self->filename, 10240);
   if($ret == ARCHIVE_WARN)

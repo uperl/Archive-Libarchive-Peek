@@ -14,7 +14,21 @@ my $contents = $peek->file('README.txt')
 # DESCRIPTION
 
 This module lets you peek into archives without extracting them.  It is based on [Archive::Peek](https://metacpan.org/pod/Archive::Peek), but it uses [Archive::Libarchive](https://metacpan.org/pod/Archive::Libarchive),
-and thus all of the many formats supported by `libarchive`.
+and thus all of the many formats supported by `libarchive`.  It also supports some unique features of the various classes that use
+the "Peek" style interface:
+
+- Many Many formats
+
+    compressed tar, Zip, RAR, ISO 9660 images, etc.
+
+- Zips with encrypted entries
+
+    You can specify the passphrase or a passphrase callback with the constructor
+
+- Multi-file RAR archives
+
+    If filename is an array reference it will be assumed to be a list of filenames
+    representing a single multi-file archive.
 
 # CONSTRUCTOR
 
