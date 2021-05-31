@@ -53,4 +53,14 @@ subtest 'iterate' => sub {
 
 };
 
+is(
+  Archive::Libarchive::Peek->new( filename => 'corpus/archive.tar' ),
+  object {
+    call [ file => 'archive/' ] => '';
+    call [ file => 'archive/bar.txt' ] => "there\n";
+    call [ file => 'archive/foo.txt' ] => "hello\n";
+  },
+  'file',
+);
+
 done_testing;

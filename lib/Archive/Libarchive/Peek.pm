@@ -150,10 +150,53 @@ sub files ($self)
 
  my $content = $peek->file($filename);
 
+This method files the filename in the archive and returns its content.
+
 =cut
 
-sub file
+sub _entry_data ($self, $r, $e, $content)
 {
+  $$content = '';
+
+  if($e->size > 0)
+  {
+    my $buffer;
+    my $ret = $r->read_data(\$buffer);
+    last if $ret == 0;
+    if($ret == ARCHIVE_WARN)
+    {
+      Carp::carp($r->error_string);
+    }
+    elsif($ret < ARCHIVE_WARN)
+    {
+      Carp::croak($r->error_string);
+    }
+    $$content .= $buffer;
+  }
+}
+
+sub file ($self, $filename)
+{
+  my($r, $e) = $self->_archive;
+
+  while(1)
+  {
+    last unless $self->_entry($r,$e);
+    if($e->pathname eq $filename)
+    {
+      my $content;
+      $self->_entry_data($r, $e, \$content);
+      return $content;
+    }
+    else
+    {
+      $r->read_data_skip;
+    }
+  }
+
+  $r->close;
+
+  return undef;
 }
 
 =head2 iterate
@@ -193,25 +236,8 @@ sub iterate ($self, $callback)
   while(1)
   {
     last unless $self->_entry($r,$e);
-
-    my $content = '';
-    if($e->size > 0)
-    {
-      my $buffer;
-
-      my $ret = $r->read_data(\$buffer);
-      last if $ret == 0;
-      if($ret == ARCHIVE_WARN)
-      {
-        Carp::carp($r->error_string);
-      }
-      elsif($ret < ARCHIVE_WARN)
-      {
-        Carp::croak($r->error_string);
-      }
-      $content .= $buffer;
-    }
-
+    my $content;
+    $self->_entry_data($r, $e, \$content);
     $callback->($e->pathname, $content, $e->filetype.'');
   }
 }
