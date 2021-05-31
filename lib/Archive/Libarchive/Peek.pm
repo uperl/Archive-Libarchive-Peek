@@ -236,7 +236,7 @@ sub file ($self, $filename)
 
 =head2 iterate
 
- $peek->iterate(sub ($filename, $content, $type) {
+ $peek->iterate(sub ($filename, $content, $e) {
    ...
  });
 
@@ -253,12 +253,10 @@ The filename of the entry
 
 The content of the entry, or C<''> for non-regular or zero-sized files
 
-=item type
+=item entry
 
-The type of entry.  For regular files this will be C<reg> and for directories
-this will be C<dir>.  See L<Archive::Libarchive::Entry/filetype> for the full list.
-(Unlike L<Archive::Libarchive::Entry>, this method will NOT create dualvars, just
-strings).
+This is a L<Archive::Libarchive::Entry> instance which has metadata about the
+file, like the permissions, timestamps and file type.
 
 =back
 
@@ -273,7 +271,7 @@ sub iterate ($self, $callback)
     last unless $self->_entry($r,$e);
     my $content;
     $self->_entry_data($r, $e, \$content);
-    $callback->($e->pathname, $content, $e->filetype.'');
+    $callback->($e->pathname, $content, $e);
   }
 }
 

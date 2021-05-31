@@ -39,9 +39,9 @@ subtest 'iterate' => sub {
   my $peek = Archive::Libarchive::Peek->new( filename => 'corpus/archive.tar' );
 
   my @expect = (
-    [ 'archive/', '', 'dir' ],
-    [ 'archive/bar.txt', "there\n", 'reg' ],
-    [ 'archive/foo.txt', "hello\n", 'reg' ],
+    [ 'archive/', '', object { call filetype => 'dir' } ],
+    [ 'archive/bar.txt', "there\n", object { call filetype => 'reg' } ],
+    [ 'archive/foo.txt', "hello\n", object { call filetype => 'reg' } ],
   );
 
   $peek->iterate(sub ($filename, $content, $type) {

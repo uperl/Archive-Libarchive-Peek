@@ -88,7 +88,7 @@ This method files the filename in the archive and returns its content.
 ## iterate
 
 ```perl
-$peek->iterate(sub ($filename, $content, $type) {
+$peek->iterate(sub ($filename, $content, $e) {
   ...
 });
 ```
@@ -104,12 +104,10 @@ entry.  The arguments are:
 
     The content of the entry, or `''` for non-regular or zero-sized files
 
-- type
+- entry
 
-    The type of entry.  For regular files this will be `reg` and for directories
-    this will be `dir`.  See ["filetype" in Archive::Libarchive::Entry](https://metacpan.org/pod/Archive::Libarchive::Entry#filetype) for the full list.
-    (Unlike [Archive::Libarchive::Entry](https://metacpan.org/pod/Archive::Libarchive::Entry), this method will NOT create dualvars, just
-    strings).
+    This is a [Archive::Libarchive::Entry](https://metacpan.org/pod/Archive::Libarchive::Entry) instance which has metadata about the
+    file, like the permissions, timestamps and file type.
 
 # SEE ALSO
 
