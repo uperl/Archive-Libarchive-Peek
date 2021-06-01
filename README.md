@@ -116,9 +116,10 @@ my $hashref = $peek->as_hash;
 ```
 
 Returns a hash reference where the keys are entry pathnames and the values are the
-entry content.  Directory and other special entries are not included.  This method will
-attempt to resolve symbolic links as scalar references.  Hardlinks will be reference
-aliased.
+entry content.  This method will attempt to resolve symbolic links as scalar references.
+Hardlinks will be reference aliased.  Directory and other special types will be handled
+as array reference, the exact format to be determined in the future, although the first
+element in the array reference will be the file type.
 
 # SEE ALSO
 

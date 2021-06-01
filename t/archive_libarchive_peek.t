@@ -57,6 +57,7 @@ is(
   Archive::Libarchive::Peek->new( filename => 'corpus/archive-symlink.tar' ),
   object {
     call as_hash => {
+      'archive/' => ['dir'],
       'archive/bar.txt' => "there\n",
       'archive/foo.txt' => "hello\n",
       'archive/symlink-bad' => \undef,
@@ -71,6 +72,7 @@ is(
   my $hash = Archive::Libarchive::Peek->new( filename => 'corpus/archive-hardlink.tar' )->as_hash;
 
   is($hash, {
+    'archive/' => ['dir'],
     'archive/bar.txt' => "there\n",
     'archive/foo.txt' => "hello\n",
     'archive/hardlink' => "hello\n",
@@ -79,6 +81,7 @@ is(
   $hash->{'archive/foo.txt'} .= "help\n";
 
   is($hash, {
+    'archive/' => ['dir'],
     'archive/bar.txt' => "there\n",
     'archive/foo.txt' => "hello\nhelp\n",
     'archive/hardlink' => "hello\nhelp\n",
