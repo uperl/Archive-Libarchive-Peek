@@ -54,6 +54,39 @@ subtest 'iterate' => sub {
 };
 
 is(
+  Archive::Libarchive::Peek->new( filename => 'corpus/archive-symlink.tar' ),
+  object {
+    call as_hash => {
+      'archive/bar.txt' => "there\n",
+      'archive/foo.txt' => "hello\n",
+      'archive/symlink-bad' => \undef,
+      'archive/symlink-good' => \"hello\n",
+    },
+  },
+  'as_hash',
+);
+
+{
+
+  my $hash = Archive::Libarchive::Peek->new( filename => 'corpus/archive-hardlink.tar' )->as_hash;
+
+  is($hash, {
+    'archive/bar.txt' => "there\n",
+    'archive/foo.txt' => "hello\n",
+    'archive/hardlink' => "hello\n",
+  }, 'as_hash');
+
+  $hash->{'archive/foo.txt'} .= "help\n";
+
+  is($hash, {
+    'archive/bar.txt' => "there\n",
+    'archive/foo.txt' => "hello\nhelp\n",
+    'archive/hardlink' => "hello\nhelp\n",
+  }, 'modifylink');
+
+}
+
+is(
   Archive::Libarchive::Peek->new( filename => 'corpus/archive.tar' ),
   object {
     call [ file => 'archive/' ] => '';
