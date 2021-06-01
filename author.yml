@@ -8,6 +8,7 @@ pod_spelling_system:
   stopwords:
     - dualvars
     - RAR
+    - hardlinks
 
 pod_coverage:
   skip: 0

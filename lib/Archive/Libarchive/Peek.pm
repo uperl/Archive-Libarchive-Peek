@@ -5,8 +5,9 @@ use warnings;
 use Archive::Libarchive 0.03 qw( ARCHIVE_OK ARCHIVE_WARN ARCHIVE_EOF );
 use Ref::Util qw( is_plain_coderef is_plain_arrayref );
 use Carp ();
-use 5.020;
-use experimental qw( signatures );
+use Path::Tiny ();
+use 5.022;
+use experimental qw( signatures refaliasing );
 
 # ABSTRACT: Peek into archives without extracting them
 # VERSION
@@ -273,6 +274,62 @@ sub iterate ($self, $callback)
     $self->_entry_data($r, $e, \$content);
     $callback->($e->pathname, $content, $e);
   }
+}
+
+=head2 as_hash
+
+ my $hashref = $peek->as_hash;
+
+Returns a hash reference where the keys are entry pathnames and the values are the
+entry content.  Directory and other special entries are not included.  This method will
+attempt to resolve symbolic links as scalar references.  Hardlinks will be reference
+aliased.
+
+=cut
+
+sub as_hash ($self)
+{
+  my %hash;
+  my %links;
+  $self->iterate(sub ($path, $content, $e) {
+    if(my $target = $e->hardlink)
+    {
+      if(defined $hash{$target})
+      {
+        \$hash{$path} = \$hash{$target};
+      }
+      else
+      {
+        Carp::croak("found hardlink but no target");
+      }
+      return;
+    }
+    my $type = $e->filetype;
+    if($type eq 'reg')
+    {
+      $hash{$path} = $content;
+    }
+    elsif($type eq 'lnk')
+    {
+      my $target = Path::Tiny->new($e->symlink)->absolute(Path::Tiny->new("/")->child($e->pathname)->parent)->relative('/');
+      $links{$path} = $target;
+    }
+  });
+
+  foreach my $path (keys %links)
+  {
+    my $target = $links{$path};
+    if($hash{$target})
+    {
+      $hash{$path} = \$hash{$target};
+    }
+    else
+    {
+      $hash{$path} = \undef;
+    }
+  }
+
+  \%hash;
 }
 
 1;

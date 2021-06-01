@@ -109,6 +109,17 @@ entry.  The arguments are:
     This is a [Archive::Libarchive::Entry](https://metacpan.org/pod/Archive::Libarchive::Entry) instance which has metadata about the
     file, like the permissions, timestamps and file type.
 
+## as\_hash
+
+```perl
+my $hashref = $peek->as_hash;
+```
+
+Returns a hash reference where the keys are entry pathnames and the values are the
+entry content.  Directory and other special entries are not included.  This method will
+attempt to resolve symbolic links as scalar references.  Hardlinks will be reference
+aliased.
+
 # SEE ALSO
 
 - [Archive::Peek](https://metacpan.org/pod/Archive::Peek)
