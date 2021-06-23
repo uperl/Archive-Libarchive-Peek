@@ -38,7 +38,8 @@ the "Peek" style interface:
 my $peek = Archive::Libarchive::Peek->new(%options);
 ```
 
-This creates a new instance of the Peek object.
+This creates a new instance of the Peek object.  One of the ["filename"](#filename) or
+["memory"](#memory) option
 
 - filename
 
@@ -46,7 +47,18 @@ This creates a new instance of the Peek object.
     my $peek = Archive::Libarchive::Peek->new( filename => $filename );
     ```
 
-    This option is required, and is the filename of the archive.
+    The filename of the archive to read from.
+
+- memory
+
+    \[version 0.03\]
+
+    ```perl
+    my $peek = Archive::Libarchive::Peek->new( memory => \$content );
+    ```
+
+    A reference to the memory region containing the archive.  Passing in a plain
+    scalar will throw an exception.
 
 - passphrase
 
@@ -65,7 +77,7 @@ This creates a new instance of the Peek object.
 
 ## filename
 
-This is the archive filename for the Peek object.
+This is the archive filename for the Peek object.  This will be `undef` for in-memory archives.
 
 # METHODS
 
