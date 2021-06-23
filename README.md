@@ -123,6 +123,8 @@ entry.  The arguments are:
 
 ## as\_hash
 
+\[version 0.02\]
+
 ```perl
 my $hashref = $peek->as_hash;
 ```

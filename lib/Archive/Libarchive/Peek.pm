@@ -308,6 +308,8 @@ sub iterate ($self, $callback)
 
 =head2 as_hash
 
+[version 0.02]
+
  my $hashref = $peek->as_hash;
 
 Returns a hash reference where the keys are entry pathnames and the values are the
