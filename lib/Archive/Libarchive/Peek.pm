@@ -7,7 +7,7 @@ use Ref::Util qw( is_plain_coderef is_plain_arrayref is_plain_scalarref is_ref )
 use Carp ();
 use Path::Tiny ();
 use 5.022;
-use experimental qw( signatures refaliasing );
+use experimental qw( signatures refaliasing postderef );
 
 # ABSTRACT: Peek into archives without extracting them
 # VERSION
