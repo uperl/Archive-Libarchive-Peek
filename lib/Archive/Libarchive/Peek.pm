@@ -226,18 +226,21 @@ sub _entry_data ($self, $r, $e, $content)
 
   if($e->size > 0)
   {
-    my $buffer;
-    my $ret = $r->read_data(\$buffer);
-    last if $ret == 0;
-    if($ret == ARCHIVE_WARN)
+    while(1)
     {
-      Carp::carp($r->error_string);
+      my $buffer;
+      my $ret = $r->read_data(\$buffer);
+      last if $ret == 0;
+      if($ret == ARCHIVE_WARN)
+      {
+        Carp::carp($r->error_string);
+      }
+      elsif($ret < ARCHIVE_WARN)
+      {
+        Carp::croak($r->error_string);
+      }
+      $$content .= $buffer;
     }
-    elsif($ret < ARCHIVE_WARN)
-    {
-      Carp::croak($r->error_string);
-    }
-    $$content .= $buffer;
   }
 }
 

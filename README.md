@@ -1,4 +1,4 @@
-# Archive::Libarchive::Peek ![linux](https://github.com/uperl/Archive-Libarchive-Peek/workflows/linux/badge.svg)
+# Archive::Libarchive::Peek ![static](https://github.com/uperl/Archive-Libarchive-Peek/workflows/static/badge.svg) ![linux](https://github.com/uperl/Archive-Libarchive-Peek/workflows/linux/badge.svg)
 
 Peek into archives without extracting them
 
