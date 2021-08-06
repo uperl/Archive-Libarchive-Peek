@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+  - Fixed bug where entry content might be truncated (gh#4)
 
 0.03      2021-06-23 12:28:50 -0600
   - Add memory option for reading archive directly from memory (gh#3)
