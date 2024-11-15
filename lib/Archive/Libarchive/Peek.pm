@@ -8,7 +8,7 @@ use Carp ();
 use Path::Tiny ();
 use 5.020;
 use Alias::Any;
-use experimental qw( signatures refaliasing postderef );
+use experimental qw( signatures postderef );
 
 # ABSTRACT: Peek into archives without extracting them
 # VERSION
