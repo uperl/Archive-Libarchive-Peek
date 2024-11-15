@@ -6,7 +6,8 @@ use Archive::Libarchive 0.03 qw( ARCHIVE_OK ARCHIVE_WARN ARCHIVE_EOF );
 use Ref::Util qw( is_plain_coderef is_plain_arrayref is_plain_scalarref is_ref );
 use Carp ();
 use Path::Tiny ();
-use 5.022;
+use 5.020;
+use Alias::Any;
 use experimental qw( signatures refaliasing postderef );
 
 # ABSTRACT: Peek into archives without extracting them
@@ -332,7 +333,7 @@ sub as_hash ($self)
     {
       if(defined $hash{$target})
       {
-        \$hash{$path} = \$hash{$target};
+        alias $hash{$path} = $hash{$target};
       }
       else
       {
