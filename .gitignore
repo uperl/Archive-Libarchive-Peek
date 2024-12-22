@@ -2,4 +2,7 @@ Archive-Libarchive-Peek-*
 /.build/
 *.swp
 
-
+/Archive-Libarchive-Peek-*
+/.build
+*.old
+*.orig
